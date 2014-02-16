@@ -1,4 +1,4 @@
-nagios/icinga plugins
+Nagios/Icinga plugins
 =======================
 
 A set of Nagios/Icinga plugins for different usage.

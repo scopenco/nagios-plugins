@@ -30,8 +30,8 @@ def command(cmd):
 
 def main():
     p = OptionParser(description='nagios script for get free '
-                                 'ips from IPmanager',
-                     prog='check_mgr5_free_ip.py',
+                                 'ips from IPmanager 4',
+                     prog='check_ipmgr5_free_ip.py',
                      version='0.1',
                      usage='%prog [-d] -w WARN -c CRIT -u USER')
     p.add_option('-w', '--warning', action='store',
@@ -78,7 +78,7 @@ def main():
         if args[1].split('=')[1] == config['user']:
             ip_cur = int(args[2].split('=')[1])
 
-    if not ip_cur:
+    if not ip_num:
         print 'CRITICAL: user %s has no ip range!' % config['user']
         exit(2)
 

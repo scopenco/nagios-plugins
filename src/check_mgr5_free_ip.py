@@ -35,26 +35,20 @@ def main():
                      version='0.1',
                      usage='%prog [-d] -w WARN -c CRIT -u USER')
     p.add_option('-w', '--warning', action='store',
-                 help='ip num warning', default=False)
+                 help='ip num warning', default=None)
     p.add_option('-c', '--critical', action='store',
-                 help='ip num critical', default=False)
+                 help='ip num critical', default=None)
     p.add_option('-u', '--user', action='store',
-                 help='filter user', default=False)
+                 help='filter user', default=None)
     p.add_option('-d', '--debug', action='store_true',
-                 help='verbose output', default=False)
+                 help='verbose output', default=None)
     options, arguments = p.parse_args()
 
-    # check mandatory options
-    if not options.warning or \
-            not options.critical or \
-            not options.user:
-        p.print_help()
-        exit(1)
-
-    defaults = dict(warning=15, critical=10, user='vds', debug=False)
-    config = dict()
+    defaults = {'warning':15, 'critical':10,
+                'user':'vds', 'debug':False}
+    config = {}
     config.update(defaults)
-    # Options override config
+    # options override config
     config.update(dict([(k, v) for k, v in vars(options).items()
                   if v is not None]))
 
@@ -71,21 +65,26 @@ def main():
         args = line.strip().split()
         if len(args) < 5:
             continue
-        if args[5] == options.user:
+        if args[5] == config['user']:
             start_range = int(args[0].split('.')[-1])
             end_range = int(args[2].split('.')[-1])
             ip_num += end_range - start_range
 
+    ip_cur = 0
     for line in command('/usr/local/mgr5/sbin/mgrctl -m ipmgr userstat'):
         args = line.strip().split()
         if len(args) < 3:
             continue
-        if args[1].split('=')[1] == options.user:
+        if args[1].split('=')[1] == config['user']:
             ip_cur = int(args[2].split('=')[1])
 
+    if not ip_cur:
+        print 'CRITICAL: user %s has no ip range!' % config['user']
+        exit(2)
+
     ip_diff = ip_num - ip_cur
-    warning = int(options.warning)
-    critical = int(options.critical)
+    warning = int(config['warning'])
+    critical = int(config['critical'])
 
     if ip_diff >= warning:
         print '[OK free ip diff %s > %s]' % (ip_diff, warning)

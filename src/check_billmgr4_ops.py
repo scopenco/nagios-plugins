@@ -4,7 +4,7 @@
 Nagios/Icinga plugin for monitoring
 hung operations in BILLmanager 4
 
-examples: 
+examples:
     ./check_billmgr4_ops.py -n 'Shared hosting' -t 3
     ./check_billmgr4_ops.py -n 'Virtual server' -t 3
 
@@ -44,7 +44,7 @@ def main():
                  help='verbose output', default=None)
     options, arguments = p.parse_args()
 
-    defaults = {'item':'Domain names', 'trycount':3, 'debug':False}
+    defaults = {'item': 'Domain names', 'trycount': 3, 'debug': False}
     config = {}
     config.update(defaults)
     # options override config
@@ -60,7 +60,8 @@ def main():
     logging.debug('options: %r', vars(options))
 
     out = ''
-    for line in command('/usr/local/ispmgr/sbin/mgrctl -m billmgr rerunoperation'):
+    for line in command(
+            '/usr/local/ispmgr/sbin/mgrctl -m billmgr rerunoperation'):
         if config['item'] in line:
             args = line.strip().split()
             for arg in args:
@@ -68,8 +69,10 @@ def main():
                 if len(arg_types) != 2:
                     continue
                 logging.debug(arg_types)
-                if arg_types[0] == 'trycount' and int(arg_types[1]) > int(config['trycount']):
-                    out += 'item="%s" trycount=%s; ' % (config['item'], arg_types[1])
+                if arg_types[0] == 'trycount' and \
+                        int(arg_types[1]) > int(config['trycount']):
+                    out += 'item="%s" trycount=%s; ' % (
+                        config['item'], arg_types[1])
     if out:
         print 'CRITICAL: %s' % out
         exit(2)

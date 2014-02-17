@@ -44,8 +44,8 @@ def main():
                  help='verbose output', default=None)
     options, arguments = p.parse_args()
 
-    defaults = {'warning':15, 'critical':10,                                                                                                                                           
-                'user':'vds', 'debug':False}                                                                                                                                           
+    defaults = {'warning': 15, 'critical': 10,
+                'user': 'vds', 'debug': False}
     config = {}
     config.update(defaults)
     # options override config
